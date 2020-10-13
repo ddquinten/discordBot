@@ -1,4 +1,9 @@
 ###################
+# Discord Bot Key #
+###################
+botkey.txt
+
+###################
 # compiled source #
 ###################
 *.com
@@ -52,7 +57,6 @@ TestResults/
 ######################
 *.log
 *.sqlite
-*.json
 # OS generated files #
 ######################
 .DS_Store?
