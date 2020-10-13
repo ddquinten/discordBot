@@ -24,7 +24,7 @@ async def on_ready():
 # Basic Commands
 
 # math
-@bot.command(brief='a operator b', description='Operators:\nAddtion ~ +\nSubtraction ~ -\nMultiplication ~ *\nDivision ~ /\nModulo ~ %\nAND ~ &\nOR ~ |\nXOR ~ ^\n\n*Note* Bitwise operators must use integer type! Otherwise will truncate', usage = '<number> <operator> <number>')
+@bot.command(brief='a operator b', description='Operators:\nAddtion ~ +\nSubtraction ~ -\nMultiplication ~ *\nDivision ~ /\nModulo ~ %\nAND ~ &\nOR ~ |\nXOR ~ ^\n\n*Note* Bitwise operators must use integer type! Otherwise will trungit cate', usage = '<number> <operator> <number>')
 async def math(ctx, *args):
 	length = len(args)
 	if length < 3:
@@ -155,4 +155,4 @@ async def on_message(message):
 	await bot.process_commands(message)"""
 
 #bot.loop.create_task(user_metrics_background_task())
-bot.run('NzY1MzAxOTAzNzE0MTU2NTQ2.X4S08A.zt6S79Z1lr2oe2SxifX-CFNRbGA')
+bot.run('token')
