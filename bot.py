@@ -3,8 +3,16 @@ import random
 from datetime import datetime
 from discord.ext import commands
 
+
+# Global vars
+#---------------------------------------------------------------------
+with open ("botkey.json") as f:
+	TOKEN = f.read()
+insidejokes = ["0 - Purple vented", "1 - Which Oscar", "2 - tm8?", "3 - Compiler Flag", "4 - Yfantis", "5 - TONNYYYY", "6 - BOOOSTED", "7 - What's the odds?"]
 bot = commands.Bot(command_prefix='.')
+
 # timed commands
+#---------------------------------------------------------------------
 """
 async def user_metrics_background_task():
 	await bot.wait_until_ready()
@@ -22,6 +30,7 @@ async def on_ready():
 	print('We have logged in as {0.user}'.format(bot))
 
 # Basic Commands
+#---------------------------------------------------------------------
 
 # math
 @bot.command(brief='a operator b', description='Operators:\nAddtion ~ +\nSubtraction ~ -\nMultiplication ~ *\nDivision ~ /\nModulo ~ %\nAND ~ &\nOR ~ |\nXOR ~ ^\n\n*Note* Bitwise operators must use integer type! Otherwise will trungit cate', usage = '<number> <operator> <number>')
@@ -71,7 +80,7 @@ async def doggo(ctx):
 	await ctx.channel.send(embed=embedVar)
 
 # inside joke
-@bot.command(brief='If you get it, you get it...', description='Server Memez')
+@bot.command(brief='If you get it, you get it...', description='Server Memez\nJoke number is optional\n' + '\n'.join(insidejokes), usage="<joke_number>")
 async def insidejoke(ctx, joke = None):
 	ran = random.randrange(0,7)
 	if joke is not None:
@@ -98,6 +107,7 @@ async def insidejoke(ctx, joke = None):
 		await ctx.channel.send("What's the odds that it's me?")
 
 # Admin commands
+#---------------------------------------------------------------------
 
 # updatestatus
 @bot.command(brief='ADMIN - Updates Bot status', aliases = ["us"], description='Sets the Bot status in the user panel')
@@ -155,4 +165,6 @@ async def on_message(message):
 	await bot.process_commands(message)"""
 
 #bot.loop.create_task(user_metrics_background_task())
-bot.run('token')
+
+#---------------------------------------------------------------------
+bot.run(TOKEN)
