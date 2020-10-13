@@ -11,11 +11,13 @@ with open ("data/botkey.txt") as f:
 # Others
 bot = commands.Bot(command_prefix='.')
 
+
 # Command Extensions
 #---------------------------------------------------------------------
 
 @bot.event
 async def on_ready():
+	await bot.change_presence(activity=discord.Game(name=".help"))
 	print('We have logged in as {0.user}'.format(bot))
 
 @bot.event
@@ -29,7 +31,9 @@ bot.load_extension("cogs.admin")
 bot.load_extension("cogs.user")
 
 # Voice commands
-bot.load_extension("cogs.voice")
+bot.load_extension("cogs.music")
+
+
 
 # timed commands
 #---------------------------------------------------------------------

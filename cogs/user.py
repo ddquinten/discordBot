@@ -65,7 +65,7 @@ class User(commands.Cog):
 		await ctx.channel.send(embed=embedVar)
 
 	# inside joke
-	@commands.command(name="insidejoke", brief='If you get it, you get it...', description='Server Memez\nJoke number is optional\n' + '\n'.join(IJList), usage="<joke_number>")
+	@commands.command(name="insidejoke", brief='If you get it, you get it...', description='Server Memez\nJoke number is optional\n' + ''.join(IJList), usage="<joke_number>")
 	async def insidejoke(self, ctx, joke = None):
 		ran = random.randrange(0,len(insidejokes))
 		if joke is not None:

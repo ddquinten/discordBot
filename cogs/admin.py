@@ -34,6 +34,8 @@ class _Admin(commands.Cog):
 			embedVar = discord.Embed(title='Admin Command', description="Called by " + ctx.message.author.name, color=0x6700F3)
 			embedVar.add_field(name="Shutdown", value="Shutting down bot...", inline=False)
 			await ctx.channel.send(embed=embedVar)
+			if ctx.voice_client is not None:
+				await ctx.voice_client.disconnect()
 			await self.bot.logout()
 		else:
 			await ctx.channel.send("You do not have permissions for this command")
