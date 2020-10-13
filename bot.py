@@ -71,7 +71,7 @@ async def doggo(ctx):
 	await ctx.channel.send(embed=embedVar)
 
 # inside joke
-@bot.command(brief='Doggo?', description='Random Doggo Pic!')
+@bot.command(brief='If you get it, you get it...', description='Server Memez')
 async def insidejoke(ctx, joke = None):
 	ran = random.randrange(0,7)
 	if joke is not None:
