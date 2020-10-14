@@ -11,7 +11,6 @@ with open ("data/botkey.txt") as f:
 # Others
 bot = commands.Bot(command_prefix='.')
 
-
 # Command Extensions
 #---------------------------------------------------------------------
 
@@ -27,13 +26,14 @@ async def on_message(message):
 # Admin commands
 bot.load_extension("cogs.admin")
 
+# Creator commands
+bot.load_extension("cogs.creator")
+
 # Basic commands
 bot.load_extension("cogs.user")
 
 # Voice commands
 bot.load_extension("cogs.music")
-
-
 
 # timed commands
 #---------------------------------------------------------------------

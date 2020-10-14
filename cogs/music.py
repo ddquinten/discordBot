@@ -68,54 +68,71 @@ class Music(commands.Cog):
 
 	@commands.command()
 	async def search(self, ctx, *args):
-		"""Searches youtube with given search"""
-		search = " ".join(args)
-		qry_str = urllib.parse.urlencode({
-			'search_query': search
-		})
-		htm_content = urllib.request.urlopen(
-			'http://www.youtube.com/results?' + qry_str
-		)
-
-		search_results = re.findall(r'/watch\?v=(.{11})', htm_content.read().decode())
-
-		embedVar = discord.Embed(title='Youtube Search - ' + search, color=0x6700F3)
-		for i in range(0, 10):
+		"""Searches youtube with given url"""
+		async with ctx.typing():
+			search = " ".join(args)
 			qry_str = urllib.parse.urlencode({
-			'format': 'json',
-			'url': 'https://www.youtube.com/watch?v=' + search_results[i]
+				'search_query': search
 			})
-			
-			with urllib.request.urlopen('https://www.youtube.com/oembed?' + qry_str) as response:
-				data = json.loads(response.read().decode())
-				embedVar.add_field(name="\u200b", value= data['title'] + "\n" + str(i+1) + ' http://www.youtube.com/watch?v=' + search_results[i], inline=False)
+			htm_content = urllib.request.urlopen(
+				'http://www.youtube.com/results?' + qry_str
+			)
+
+			search_results = re.findall(r'/watch\?v=(.{11})', htm_content.read().decode())
+
+			embedVar = discord.Embed(title='Youtube Search - ' + search, color=0x6700F3)
+			for i in range(0, 10):
+				qry_str = urllib.parse.urlencode({
+				'format': 'json',
+				'url': 'https://www.youtube.com/watch?v=' + search_results[i]
+				})
+				
+				with urllib.request.urlopen('https://www.youtube.com/oembed?' + qry_str) as response:
+					data = json.loads(response.read().decode())
+					embedVar.add_field(name="\u200b", value='{}) {}\nhttp://www.youtube.com/watch?v={}'.format(str(i+1), data['title'], search_results[i]), inline=False)
 		await ctx.channel.send(embed=embedVar)#'https://www.youtube.com/watch?v=' + search_results[0])
 
-	@commands.command()
-	async def play(self, ctx, *, url):
-		"""Plays from a url (almost anything youtube_dl supports)"""
-		song_there = os.path.isfile("song.m4a")
-		try:
-			if song_there:
-				os.remove("song.m4a")
-		except PermissionError:
-			await ctx.send("Wait for the current playing music end or use the 'stop' command")
-			return
+	@commands.command(description='Plays from a given url. You can also do a quick search by typing what you want to search. Ex .play duel of fates')
+	async def play(self, ctx, *str):
+		"""Plays from a url"""
+		if not ctx.voice_client.is_playing():
+			song_there = os.path.isfile("song.m4a")
+			try:
+				if song_there:
+					os.remove("song.m4a")
+			except PermissionError:
+				await ctx.send("Wait for the current playing music end or use the 'stop' command")
+				return
 
-		async with ctx.typing():
-			player = await YTDLSource.from_url(url, loop=self.bot.loop)
-			ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-		await ctx.send('Now playing: {}'.format(player.title))
+			if str[0:23] !="http://www.youtube.com/":
+				search = " ".join(str)
+				qry_str = urllib.parse.urlencode({
+					'search_query': search
+				})
+				htm_content = urllib.request.urlopen(
+					'http://www.youtube.com/results?' + qry_str
+				)
+				search_results = re.findall(r'/watch\?v=(.{11})', htm_content.read().decode())
+				url = 'http://www.youtube.com/watch?v=' + search_results[0]
+			else:
+				url = str[0]
+				
+			async with ctx.typing():
+				player = await YTDLSource.from_url(url, loop=self.bot.loop)
+				ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+			await ctx.channel.send(embed=discord.Embed(title='Now Playing', description=player.title, color=0x6700F3))
 
-	@commands.command()
+	@commands.command(hidden=True)
 	async def stream(self, ctx, *, url):
 		"""Streams from a url (same as yt, but doesn't predownload)"""
-
+		"""
 		async with ctx.typing():
 			player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
 			ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
 
 		await ctx.send('Now playing: {}'.format(player.title))
+		"""
+		pass
 
 	@commands.command()
 	async def volume(self, ctx, volume: int):
@@ -125,12 +142,13 @@ class Music(commands.Cog):
 			return await ctx.send("Not connected to a voice channel.")
 
 		ctx.voice_client.source.volume = volume / 100
-		await ctx.send("Changed volume to {}%".format(volume))
+		await ctx.channel.send(embed=discord.Embed(title='Volume', description="Changed volume to {}%".format(volume), color=0x6700F3))
 
 	@commands.command(name='pause', brief='Pauses current playing music')
 	async def pause(self, ctx):
 		if ctx.voice_client.is_playing():
 			ctx.voice_client.pause()
+			await ctx.message.add_reaction("⏸️")
 		else:
 			await ctx.channel.send("There is no music currently playing")
 
@@ -138,6 +156,7 @@ class Music(commands.Cog):
 	async def stop(self, ctx):
 		if ctx.voice_client.is_playing():
 			ctx.voice_client.stop()
+			await ctx.message.add_reaction("⏹️")
 		else:
 			await ctx.channel.send("There is no music currently playing")
 
@@ -145,6 +164,7 @@ class Music(commands.Cog):
 	async def resume(self, ctx):
 		if ctx.voice_client.is_paused():
 			ctx.voice_client.resume()
+			await ctx.message.add_reaction("▶️")
 		else:
 			await ctx.channel.send("There is no music currently playing")
 
@@ -154,7 +174,6 @@ class Music(commands.Cog):
 		await ctx.voice_client.disconnect()
 
 	@play.before_invoke
-	#@yt.before_invoke
 	@stream.before_invoke
 	async def ensure_voice(self, ctx):
 		if ctx.voice_client is None:
@@ -163,8 +182,8 @@ class Music(commands.Cog):
 			else:
 				await ctx.send("You are not connected to a voice channel.")
 				raise commands.CommandError("Author not connected to a voice channel.")
-		elif ctx.voice_client.is_playing():
-			ctx.voice_client.stop()
+		#elif ctx.voice_client.is_playing():
+		#	ctx.voice_client.stop()
 
 def setup(bot):
 	bot.add_cog(Music(bot))
